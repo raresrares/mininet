@@ -9,8 +9,8 @@ class NetworkTopo(Topo):
         h1 = self.addHost('h1')
         h2 = self.addHost('h2')
 
-        # add three links between h1 and h2
-        for _ in range(3):
+        # add two links between h1 and h2
+        for _ in range(2):
             self.addLink(h1, h2)
 
 
