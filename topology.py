@@ -4,19 +4,53 @@ from mininet.net import Mininet
 from mininet.link import TCLink
 from mininet.log import setLogLevel
 
+import info
+
 
 class Topology(Topo):
+    def build(self, nr=2, nh=2):
+        routers = []
+        # Add routers to topology
+        for i in range(nr):
+            routers.append(self.addHost(info.get("router_name", i)))
 
-    def build(self):
-        h1 = self.addHost('h1')
-        h2 = self.addHost('h2')
+        # Add links between routers
+        for i in range(nr):
+            for j in range(i + 1, nr):
+                ifn1 = info.get("r2r_if_name1", i, j)
+                ifn2 = info.get("r2r_if_name1", i, j)
+                self.addLink(routers[i], routers[j],
+                             intfName1=ifn, intfName2=ifn)
 
-        s1 = self.addSwitch('s1')
+        # Add links between routes and hosts
+        for i in range(nr):
+            host = self.addHost(info.get("host_name", i))
+            i1 = info.get("host_if_name", i)
 
-        self.addLink(h1, s1, cls=TCLink, delay='40ms', bw=8)
-        self.addLink(h2, s1, cls=TCLink, delay='40ms', bw=8)
-        self.addLink(h1, s1, cls=TCLink, delay='40ms', bw=8)
-        self.addLink(h2, s1, cls=TCLink, delay='40ms', bw=8)
+            for j in range(nh):
+                if i == j:
+                    i2 = info.get("router_if_name", j)
+                    self.addLink(host, routers[i], intfName1=i1, intfName2=i2)
+
+
+class FullNM(object):
+    def __init__(self, net, n_routers, n_hosts):
+        self.net = net
+        self.hosts = []
+        self.routers = []
+        self.n_hosts = n_hosts
+
+        for i in range(n_hosts):
+            r = self.net.get(info.get("router_name", i))
+            hosts = []
+
+            for j in range(n_hosts):
+                hidx = i * n_hosts + j
+                h = self.net.get(info.get("host_name", hidx))
+                hosts.append(h)
+                self.hosts.append(h)
+
+            self.routers.append((r, hosts))
 
 
 def run():
@@ -25,7 +59,6 @@ def run():
     net = Mininet(topo=topo, host=CPULimitedHost, link=TCLink)
 
     net.start()
-    net.pingAll()
     net.interact()
 
 
