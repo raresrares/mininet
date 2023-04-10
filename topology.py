@@ -17,16 +17,14 @@ class Topology(Topo):
         # Add links between routers
         for i in range(nr):
             for j in range(i + 1, nr):
-                ifn1 = info.get("r2r_if_name1", i, j)
-                ifn2 = info.get("r2r_if_name1", i, j)
+                ifn1 = info.get("r2r_if_name", i, j)
+                ifn2 = info.get("r2r_if_name", j, i)
                 self.addLink(routers[i], routers[j],
-                             intfName1=ifn, intfName2=ifn)
-
+                             intfName1=ifn1, intfName2=ifn2)
         # Add links between routes and hosts
         for i in range(nr):
             host = self.addHost(info.get("host_name", i))
             i1 = info.get("host_if_name", i)
-
             for j in range(nh):
                 if i == j:
                     i2 = info.get("router_if_name", j)
