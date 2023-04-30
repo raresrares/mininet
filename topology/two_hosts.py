@@ -33,6 +33,7 @@ def run():
 
     h1.cmd("mount -t debugfs none /sys/kernel/debug")
     h2.cmd("mount -t debugfs none /sys/kernel/debug")
+
     h1.cmd('ip mptcp endpoint flush')
     h1.cmd('ip mptcp limits set subflow 2 add_addr_accepted 2')
 
