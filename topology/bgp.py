@@ -8,8 +8,6 @@ from subprocess import call
 
 
 class LinuxRouter(Host):
-    "A Node with IP forwarding enabled."
-
     def config(self, **params):
         super(LinuxRouter, self).config(**params)
         self.cmd('sysctl net.ipv4.ip_forward=1')
@@ -23,7 +21,6 @@ class NetworkTopo(Topo):
     "BGP network topology."
 
     def build(self, **_opts):
-
         defaultIP = '192.168.1.1/24'
         router = self.addNode('r0', cls=LinuxRouter, ip=defaultIP)
 
@@ -49,12 +46,10 @@ class NetworkTopo(Topo):
 
 
 def run():
-    "Test BGP network topology"
     topo = NetworkTopo()
     net = Mininet(topo=topo)
     net.start()
 
-    info('*** Routing Table on Router:\n')
     print(net['r0'].cmd('route'))
 
     net.pingAll()
